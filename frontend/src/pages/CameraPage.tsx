@@ -1,38 +1,35 @@
-import React from 'react';
-import styled from 'styled-components';
-
-const Container = styled.div`
-  min-height: 100vh;
-  background: ${({ theme }) => theme.colors.background};
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: ${({ theme }) => theme.spacing.xl};
-`;
-
-const Title = styled.h1`
-  color: ${({ theme }) => theme.colors.text};
-  font-size: ${({ theme }) => theme.fonts.sizes.xxl};
-  margin-bottom: ${({ theme }) => theme.spacing.lg};
-`;
-
-const Description = styled.p`
-  color: ${({ theme }) => theme.colors.textSecondary};
-  font-size: ${({ theme }) => theme.fonts.sizes.md};
-  text-align: center;
-  max-width: 500px;
-`;
+import React, { useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { CameraView } from '../components/camera/CameraView';
 
 const CameraPage: React.FC = () => {
+  const navigate = useNavigate();
+
+  const handlePhotoCapture = useCallback((imageSrc: string) => {
+    // TODO: Navigate to snap editor with captured image
+    console.log('Photo captured:', imageSrc);
+    // navigate('/snap/edit', { state: { imageSrc, type: 'photo' } });
+  }, []);
+
+  const handleVideoCapture = useCallback((videoBlob: Blob) => {
+    // TODO: Navigate to snap editor with captured video
+    console.log('Video captured:', videoBlob);
+    // navigate('/snap/edit', { state: { videoBlob, type: 'video' } });
+  }, []);
+
+  const handleError = useCallback((error: string) => {
+    console.error('Camera error:', error);
+    // TODO: Show error toast or modal
+  }, []);
+
   return (
-    <Container>
-      <Title>📸 Camera</Title>
-      <Description>
-        Camera functionality will be implemented here. This will include photo/video capture,
-        filters, and snap creation features.
-      </Description>
-    </Container>
+    <CameraView
+      onCapture={handlePhotoCapture}
+      onVideoCapture={handleVideoCapture}
+      onError={handleError}
+      showControls={true}
+      autoStart={true}
+    />
   );
 };
 
