@@ -1,6 +1,5 @@
 import React from 'react';
 import styled from 'styled-components';
-import { useAuth } from '@/contexts/AuthContext';
 import { useSocket } from '@/contexts/SocketContext';
 
 const Container = styled.div`
@@ -56,18 +55,7 @@ const StatusIndicator = styled.div<{ connected: boolean }>`
     connected ? theme.colors.success : theme.colors.error};
 `;
 
-const LogoutButton = styled.button`
-  background: ${({ theme }) => theme.colors.error};
-  color: white;
-  padding: ${({ theme }) => theme.spacing.sm} ${({ theme }) => theme.spacing.md};
-  border-radius: ${({ theme }) => theme.borderRadius.md};
-  font-size: ${({ theme }) => theme.fonts.sizes.sm};
-  transition: opacity 0.2s ease;
 
-  &:hover {
-    opacity: 0.9;
-  }
-`;
 
 const Content = styled.main`
   flex: 1;
@@ -133,16 +121,7 @@ const FeatureDescription = styled.p`
 `;
 
 const HomePage: React.FC = () => {
-  const { user, logout } = useAuth();
   const { isConnected } = useSocket();
-
-  const handleLogout = async () => {
-    try {
-      await logout();
-    } catch (error) {
-      console.error('Logout error:', error);
-    }
-  };
 
   return (
     <Container>
@@ -150,17 +129,16 @@ const HomePage: React.FC = () => {
         <Logo>👻 Snapchat Clone</Logo>
         <UserInfo>
           <Avatar>
-            {user?.displayName?.charAt(0).toUpperCase() || '?'}
+            S
           </Avatar>
-          <Username>{user?.displayName}</Username>
+          <Username>Snapchat Clone</Username>
           <StatusIndicator connected={isConnected} title={isConnected ? 'Connected' : 'Disconnected'} />
-          <LogoutButton onClick={handleLogout}>Logout</LogoutButton>
         </UserInfo>
       </Header>
 
       <Content>
         <WelcomeMessage>
-          Welcome to Snapchat Clone, {user?.displayName}! 👋
+          Welcome to Snapchat Clone! 👋
         </WelcomeMessage>
         
         <Description>

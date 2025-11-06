@@ -17,8 +17,6 @@ import { errorHandler } from '@/middleware/errorHandler';
 import { rateLimiter } from '@/middleware/rateLimiter';
 
 // Import routes
-import authRoutes from '@/routes/auth';
-import firebaseAuthRoutes from '@/routes/firebaseAuth';
 import userRoutes from '@/routes/users';
 import messageRoutes from '@/routes/messages';
 import snapRoutes from '@/routes/snaps';
@@ -93,8 +91,6 @@ app.get('/health', (req, res) => {
 });
 
 // API routes
-app.use('/api/auth', authRoutes); // Keep old auth routes for backward compatibility
-app.use('/api/firebase-auth', firebaseAuthRoutes); // New Firebase auth routes
 app.use('/api/users', userRoutes);
 app.use('/api/messages', messageRoutes);
 app.use('/api/snaps', snapRoutes);
@@ -117,10 +113,9 @@ const PORT = process.env.PORT || 5000;
 
 const startServer = async () => {
   try {
-    // Connect to databases
-    await connectDB();
-    await connectRedis();
-
+    // Skip database connections for testing
+    logger.info('⚠️  Skipping database connections for testing');
+    
     // Start server
     server.listen(PORT, () => {
       logger.info(`🚀 Server running on port ${PORT}`);

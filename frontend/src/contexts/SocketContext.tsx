@@ -1,6 +1,5 @@
 import React, { createContext, useContext, useEffect, useRef, ReactNode } from 'react';
 import { io, Socket } from 'socket.io-client';
-import { useAuth } from './AuthContext';
 import { SocketMessage, SocketNotification } from '@/types';
 import toast from 'react-hot-toast';
 
@@ -21,25 +20,18 @@ interface SocketProviderProps {
 }
 
 export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
-  const { user } = useAuth();
   const socketRef = useRef<Socket | null>(null);
   const [isConnected, setIsConnected] = React.useState(false);
 
   useEffect(() => {
-    if (user) {
-      // Initialize socket connection
-      const token = localStorage.getItem('accessToken');
-      
-      socketRef.current = io(import.meta.env.VITE_SOCKET_URL || 'http://localhost:5000', {
-        auth: {
-          token,
-        },
-        transports: ['websocket', 'polling'],
-        timeout: 20000,
-        reconnection: true,
-        reconnectionAttempts: 5,
-        reconnectionDelay: 1000,
-      });
+    // Initialize socket connection without authentication
+    socketRef.current = io(import.meta.env.VITE_SOCKET_URL || 'http://localhost:5000', {
+      transports: ['websocket', 'polling'],
+      timeout: 20000,
+      reconnection: true,
+      reconnectionAttempts: 5,
+      reconnectionDelay: 1000,
+    });
 
       const socket = socketRef.current;
 
@@ -130,19 +122,11 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
         toast.error(error.message || 'Connection error');
       });
 
-      return () => {
-        socket.disconnect();
-        setIsConnected(false);
-      };
-    } else {
-      // Disconnect socket if user is not authenticated
-      if (socketRef.current) {
-        socketRef.current.disconnect();
-        socketRef.current = null;
-        setIsConnected(false);
-      }
-    }
-  }, [user]);
+    return () => {
+      socket.disconnect();
+      setIsConnected(false);
+    };
+  }, []);
 
   const sendMessage = (message: SocketMessage): void => {
     if (socketRef.current && isConnected) {

@@ -1,12 +1,10 @@
 import { Request } from 'express';
-import { JwtPayload } from 'jsonwebtoken';
 
 // User Types
 export interface IUser {
   _id: string;
   username: string;
   email: string;
-  password: string;
   displayName: string;
   profilePicture?: string;
   phoneNumber?: string;
@@ -174,17 +172,7 @@ export interface INotification {
   updatedAt: Date;
 }
 
-// JWT Types
-export interface IJwtPayload extends JwtPayload {
-  userId: string;
-  username: string;
-  email: string;
-}
 
-// Express Request with User
-export interface AuthenticatedRequest extends Request {
-  user?: IJwtPayload;
-}
 
 // Socket Types
 export interface ISocketUser {
