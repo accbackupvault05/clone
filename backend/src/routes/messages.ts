@@ -1,12 +1,8 @@
 import { Router } from 'express';
-import { authenticate } from '@/middleware/auth';
 import { validateSendMessage, validatePagination } from '@/middleware/validation';
 import { messageRateLimiter } from '@/middleware/rateLimiter';
 
 const router = Router();
-
-// All routes require authentication
-router.use(authenticate);
 
 // Get conversations
 router.get('/conversations', validatePagination, (req, res) => {

@@ -1,12 +1,8 @@
 import { Router } from 'express';
-import { authenticate } from '@/middleware/auth';
 import { validateSendSnap, validatePagination } from '@/middleware/validation';
 import { uploadRateLimiter } from '@/middleware/rateLimiter';
 
 const router = Router();
-
-// All routes require authentication
-router.use(authenticate);
 
 // Get received snaps
 router.get('/received', validatePagination, (req, res) => {

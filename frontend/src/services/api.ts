@@ -3,7 +3,6 @@ import { ApiResponse } from '@/types';
 
 class ApiService {
   private api: AxiosInstance;
-  private refreshTokenPromise: Promise<string> | null = null;
 
   constructor() {
     this.api = axios.create({
@@ -13,97 +12,6 @@ class ApiService {
         'Content-Type': 'application/json',
       },
     });
-
-    this.setupInterceptors();
-  }
-
-  private setupInterceptors(): void {
-    // Request interceptor to add auth token
-    this.api.interceptors.request.use(
-      (config) => {
-        const token = this.getAccessToken();
-        if (token) {
-          config.headers.Authorization = `Bearer ${token}`;
-        }
-        return config;
-      },
-      (error) => Promise.reject(error)
-    );
-
-    // Response interceptor to handle token refresh
-    this.api.interceptors.response.use(
-      (response) => response,
-      async (error) => {
-        const originalRequest = error.config;
-
-        if (error.response?.status === 401 && !originalRequest._retry) {
-          originalRequest._retry = true;
-
-          try {
-            const newToken = await this.refreshAccessToken();
-            originalRequest.headers.Authorization = `Bearer ${newToken}`;
-            return this.api(originalRequest);
-          } catch (refreshError) {
-            this.clearTokens();
-            window.location.href = '/login';
-            return Promise.reject(refreshError);
-          }
-        }
-
-        return Promise.reject(error);
-      }
-    );
-  }
-
-  private getAccessToken(): string | null {
-    return localStorage.getItem('accessToken');
-  }
-
-  private getRefreshToken(): string | null {
-    return localStorage.getItem('refreshToken');
-  }
-
-  private setTokens(accessToken: string, refreshToken: string): void {
-    localStorage.setItem('accessToken', accessToken);
-    localStorage.setItem('refreshToken', refreshToken);
-  }
-
-  private clearTokens(): void {
-    localStorage.removeItem('accessToken');
-    localStorage.removeItem('refreshToken');
-  }
-
-  private async refreshAccessToken(): Promise<string> {
-    if (this.refreshTokenPromise) {
-      return this.refreshTokenPromise;
-    }
-
-    this.refreshTokenPromise = this.performTokenRefresh();
-    
-    try {
-      const newToken = await this.refreshTokenPromise;
-      return newToken;
-    } finally {
-      this.refreshTokenPromise = null;
-    }
-  }
-
-  private async performTokenRefresh(): Promise<string> {
-    const refreshToken = this.getRefreshToken();
-    
-    if (!refreshToken) {
-      throw new Error('No refresh token available');
-    }
-
-    const response = await axios.post(
-      `${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/auth/refresh`,
-      { refreshToken }
-    );
-
-    const { accessToken, refreshToken: newRefreshToken } = response.data.data.tokens;
-    this.setTokens(accessToken, newRefreshToken);
-    
-    return accessToken;
   }
 
   // Generic request method
@@ -161,18 +69,7 @@ class ApiService {
     });
   }
 
-  // Auth methods
-  setAuthTokens(accessToken: string, refreshToken: string): void {
-    this.setTokens(accessToken, refreshToken);
-  }
 
-  clearAuthTokens(): void {
-    this.clearTokens();
-  }
-
-  isAuthenticated(): boolean {
-    return !!this.getAccessToken();
-  }
 }
 
 export const apiService = new ApiService();

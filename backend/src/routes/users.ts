@@ -1,11 +1,7 @@
 import { Router } from 'express';
-import { authenticate } from '@/middleware/auth';
 import { validateUpdateProfile, validatePagination } from '@/middleware/validation';
 
 const router = Router();
-
-// All routes require authentication
-router.use(authenticate);
 
 // User profile routes
 router.get('/profile/:userId', (req, res) => {

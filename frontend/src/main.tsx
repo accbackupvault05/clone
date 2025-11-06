@@ -7,7 +7,6 @@ import { Toaster } from 'react-hot-toast';
 import App from './App';
 import { GlobalStyles } from '@/styles/GlobalStyles';
 import { theme } from '@/styles/theme';
-import { AuthProvider } from '@/contexts/AuthContext';
 import { SocketProvider } from '@/contexts/SocketContext';
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
@@ -15,36 +14,34 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
     <BrowserRouter>
       <ThemeProvider theme={theme}>
         <GlobalStyles />
-        <AuthProvider>
-          <SocketProvider>
-            <App />
-            <Toaster
-              position="top-center"
-              toastOptions={{
-                duration: 4000,
-                style: {
-                  background: theme.colors.surface,
-                  color: theme.colors.text,
-                  border: `1px solid ${theme.colors.border}`,
-                  borderRadius: theme.borderRadius.md,
-                  fontSize: theme.fonts.sizes.sm,
+        <SocketProvider>
+          <App />
+          <Toaster
+            position="top-center"
+            toastOptions={{
+              duration: 4000,
+              style: {
+                background: theme.colors.surface,
+                color: theme.colors.text,
+                border: `1px solid ${theme.colors.border}`,
+                borderRadius: theme.borderRadius.md,
+                fontSize: theme.fonts.sizes.sm,
+              },
+              success: {
+                iconTheme: {
+                  primary: theme.colors.success,
+                  secondary: theme.colors.surface,
                 },
-                success: {
-                  iconTheme: {
-                    primary: theme.colors.success,
-                    secondary: theme.colors.surface,
-                  },
+              },
+              error: {
+                iconTheme: {
+                  primary: theme.colors.error,
+                  secondary: theme.colors.surface,
                 },
-                error: {
-                  iconTheme: {
-                    primary: theme.colors.error,
-                    secondary: theme.colors.surface,
-                  },
-                },
-              }}
-            />
-          </SocketProvider>
-        </AuthProvider>
+              },
+            }}
+          />
+        </SocketProvider>
       </ThemeProvider>
     </BrowserRouter>
   </React.StrictMode>

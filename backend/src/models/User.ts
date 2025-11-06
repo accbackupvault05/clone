@@ -1,10 +1,8 @@
 import mongoose, { Schema, Document } from 'mongoose';
-import bcrypt from 'bcryptjs';
 import { IUser, IUserSettings, IStreak } from '@/types';
 
 // User Document interface with methods
 export interface IUserDocument extends Omit<IUser, '_id'>, Document {
-  comparePassword(candidatePassword: string): Promise<boolean>;
   generateSnapcode(): string;
   addFriend(friendId: string): void;
   removeFriend(friendId: string): void;
@@ -90,11 +88,6 @@ const userSchema = new Schema<IUserDocument>({
     lowercase: true,
     match: /^[^\s@]+@[^\s@]+\.[^\s@]+$/
   },
-  password: {
-    type: String,
-    required: true,
-    minlength: 6
-  },
   displayName: {
     type: String,
     required: true,
@@ -158,13 +151,7 @@ const userSchema = new Schema<IUserDocument>({
     default: () => ({})
   }
 }, {
-  timestamps: true,
-  toJSON: {
-    transform: function(doc, ret) {
-      delete ret.password;
-      return ret;
-    }
-  }
+  timestamps: true
 });
 
 // Indexes
@@ -173,23 +160,7 @@ userSchema.index({ email: 1 });
 userSchema.index({ snapcode: 1 });
 userSchema.index({ createdAt: -1 });
 
-// Pre-save middleware to hash password
-userSchema.pre('save', async function(next) {
-  if (!this.isModified('password')) return next();
-  
-  try {
-    const salt = await bcrypt.genSalt(12);
-    this.password = await bcrypt.hash(this.password, salt);
-    next();
-  } catch (error) {
-    next(error as Error);
-  }
-});
 
-// Method to compare password
-userSchema.methods.comparePassword = async function(candidatePassword: string): Promise<boolean> {
-  return bcrypt.compare(candidatePassword, this.password);
-};
 
 // Method to generate snapcode
 userSchema.methods.generateSnapcode = function(): string {

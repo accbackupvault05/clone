@@ -31,28 +31,7 @@ export interface UserSettings {
   };
 }
 
-// Auth Types
-export interface LoginCredentials {
-  identifier: string; // email or username
-  password: string;
-}
 
-export interface RegisterData {
-  username: string;
-  email: string;
-  password: string;
-  displayName: string;
-  phoneNumber?: string;
-  dateOfBirth?: string;
-}
-
-export interface AuthResponse {
-  user: User;
-  tokens: {
-    accessToken: string;
-    refreshToken: string;
-  };
-}
 
 // Message Types
 export interface Message {
